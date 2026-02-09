@@ -22,7 +22,9 @@ export default function CollapsibleSection({
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
-    <div className={`collapsible-section ${className} ${isExpanded ? "expanded" : "collapsed"}`}>
+    <div
+      className={`collapsible-section ${className} ${isExpanded ? "expanded" : "collapsed"}`}
+    >
       <button
         className="collapsible-header"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -37,11 +39,7 @@ export default function CollapsibleSection({
           className="collapsible-arrow"
         />
       </button>
-      {isExpanded && (
-        <div className="collapsible-content">
-          {children}
-        </div>
-      )}
+      {isExpanded && <div className="collapsible-content">{children}</div>}
     </div>
   );
 }

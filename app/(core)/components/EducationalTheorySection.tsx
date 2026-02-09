@@ -47,11 +47,11 @@ export default function EducationalTheorySection({
         goals={learningObjectives.goals}
         variables={learningObjectives.variables}
       />
-      
+
       <PhysicsEquations equations={physicsEquations} />
-      
+
       {warnings.length > 0 && <PhysicsWarnings warnings={warnings} />}
-      
+
       <GuidedExperiments
         experiments={guidedExperiments}
         onApplyExperiment={onApplyExperiment}

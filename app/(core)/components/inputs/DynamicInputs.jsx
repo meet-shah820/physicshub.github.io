@@ -72,11 +72,18 @@ function renderInput(field, values, onChange) {
   return null;
 }
 
-export default function DynamicInputs({ config, values, onChange, grouped = false }) {
+export default function DynamicInputs({
+  config,
+  values,
+  onChange,
+  grouped = false,
+}) {
   // If grouped, separate by category
   if (grouped) {
     const physicsControls = config.filter((f) => f.category === "physics");
-    const visualizationControls = config.filter((f) => f.category === "visualization");
+    const visualizationControls = config.filter(
+      (f) => f.category === "visualization"
+    );
     const otherControls = config.filter((f) => !f.category);
 
     return (
@@ -85,7 +92,9 @@ export default function DynamicInputs({ config, values, onChange, grouped = fals
           <div className="inputs-group">
             <h3 className="inputs-group-title">Physics Controls</h3>
             <div className="inputs-container">
-              {physicsControls.map((field) => renderInput(field, values, onChange))}
+              {physicsControls.map((field) =>
+                renderInput(field, values, onChange)
+              )}
             </div>
           </div>
         )}
@@ -93,7 +102,9 @@ export default function DynamicInputs({ config, values, onChange, grouped = fals
           <div className="inputs-group">
             <h3 className="inputs-group-title">Visualization Controls</h3>
             <div className="inputs-container">
-              {visualizationControls.map((field) => renderInput(field, values, onChange))}
+              {visualizationControls.map((field) =>
+                renderInput(field, values, onChange)
+              )}
             </div>
           </div>
         )}

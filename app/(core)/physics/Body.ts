@@ -96,15 +96,20 @@ export default class Body {
     );
 
     // Track collisions
-    if (collided.pos.x !== newState.pos.x || collided.pos.y !== newState.pos.y) {
+    if (
+      collided.pos.x !== newState.pos.x ||
+      collided.pos.y !== newState.pos.y
+    ) {
       // Check if this is a new collision (not just updating the same collision)
-      if (!this.lastCollisionPos || 
-          p.dist(
-            toPixels(collided.pos.x), 
-            toPixels(collided.pos.y),
-            toPixels(this.lastCollisionPos.x),
-            toPixels(this.lastCollisionPos.y)
-          ) > toPixels(radius * 2)) {
+      if (
+        !this.lastCollisionPos ||
+        p.dist(
+          toPixels(collided.pos.x),
+          toPixels(collided.pos.y),
+          toPixels(this.lastCollisionPos.x),
+          toPixels(this.lastCollisionPos.y)
+        ) > toPixels(radius * 2)
+      ) {
         this.collisionCount++;
         this.lastCollisionPos = collided.pos.copy();
       }

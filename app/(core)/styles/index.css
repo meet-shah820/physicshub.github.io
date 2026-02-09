@@ -668,7 +668,7 @@ main.simulations-page {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
   }
-  
+
   .chapter-card {
     min-width: 0;
     width: 100%;
@@ -680,7 +680,7 @@ main.simulations-page {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .chapter-card {
     width: 100%;
     min-width: 0;
@@ -3324,7 +3324,9 @@ footer {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  text-shadow: 0 0 8px var(--accent-color), 0 0 12px color-mix(in oklab, var(--accent-color), transparent 50%);
+  text-shadow:
+    0 0 8px var(--accent-color),
+    0 0 12px color-mix(in oklab, var(--accent-color), transparent 50%);
   transition: text-shadow 0.3s ease;
   position: relative;
   display: inline-block;
@@ -3415,7 +3417,8 @@ footer {
 }
 
 .collapsible-section.expanded {
-  box-shadow: 0 2px 8px color-mix(in oklab, var(--accent-color), transparent 40%);
+  box-shadow: 0 2px 8px
+    color-mix(in oklab, var(--accent-color), transparent 40%);
 }
 
 .collapsible-header {
@@ -3594,7 +3597,8 @@ footer {
   align-items: center;
   gap: 0.75rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid color-mix(in oklab, var(--accent-color), transparent 70%);
+  border-bottom: 2px solid
+    color-mix(in oklab, var(--accent-color), transparent 70%);
 }
 
 .controls-row-title .title-icon {
@@ -3622,7 +3626,8 @@ footer {
 .advanced-controls {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid color-mix(in oklab, var(--accent-color), transparent 70%);
+  border-top: 1px solid
+    color-mix(in oklab, var(--accent-color), transparent 70%);
 }
 
 /* Light theme for controls panel */
@@ -3639,7 +3644,11 @@ footer {
 [data-theme="light"] .controls-row-title {
   text-shadow: none;
   color: var(--accent-color);
-  border-bottom-color: color-mix(in oklab, var(--accent-color), transparent 80%);
+  border-bottom-color: color-mix(
+    in oklab,
+    var(--accent-color),
+    transparent 80%
+  );
 }
 
 [data-theme="light"] .control-group {

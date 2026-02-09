@@ -6,15 +6,18 @@ function SelectInput({ label, name, options, value, onChange, placeholder }) {
   const handleChange = (e) => {
     const selectedValue = e.target.value;
     // Convert to number if the value is numeric (for gravity and similar numeric selects)
-    const numericValue = !isNaN(selectedValue) && selectedValue !== "" && !isNaN(parseFloat(selectedValue))
-      ? parseFloat(selectedValue) 
-      : selectedValue;
+    const numericValue =
+      !isNaN(selectedValue) &&
+      selectedValue !== "" &&
+      !isNaN(parseFloat(selectedValue))
+        ? parseFloat(selectedValue)
+        : selectedValue;
     // Create a synthetic event object that matches what onChange expects
     const syntheticEvent = {
       target: {
         name,
-        value: numericValue
-      }
+        value: numericValue,
+      },
     };
     onChange(syntheticEvent);
   };

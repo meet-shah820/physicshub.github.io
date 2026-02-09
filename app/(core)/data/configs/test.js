@@ -250,7 +250,8 @@ export const GUIDED_EXPERIMENTS = [
       "Check system statistics",
       "Observe performance metrics",
     ],
-    question: "What is the maximum number of bodies your system can handle at 60 FPS?",
+    question:
+      "What is the maximum number of bodies your system can handle at 60 FPS?",
     parameters: {
       numBodies: 50,
       gravity: EARTH_G_SI,
@@ -306,7 +307,7 @@ export const SimInfoMapper = (state, context, refs = {}) => {
   const frameTime = performanceMetrics?.frameTime || 0;
   const updateTime = performanceMetrics?.updateTime || 0;
   const renderTime = performanceMetrics?.renderTime || 0;
-  
+
   // System-wide statistics
   const numBodies = bodies?.length || 0;
   let totalMass = 0;
@@ -316,12 +317,12 @@ export const SimInfoMapper = (state, context, refs = {}) => {
   let totalMomentumY = 0;
   let collisionCount = 0;
   let activeBodies = 0;
-  
+
   if (bodies && bodies.length > 0) {
     bodies.forEach((body) => {
       const { pos, vel, acc } = body.state;
       const { mass, gravity } = body.params;
-      
+
       totalMass += mass;
       const height = Math.max(0, pos.y);
       totalPotentialEnergy += mass * gravity * height;
@@ -329,32 +330,42 @@ export const SimInfoMapper = (state, context, refs = {}) => {
       totalKineticEnergy += 0.5 * mass * velocityMag * velocityMag;
       totalMomentumX += mass * vel.x;
       totalMomentumY += mass * vel.y;
-      
+
       if (velocityMag > 0.01 || Math.abs(acc.mag()) > 0.01) {
         activeBodies++;
       }
-      
+
       // Count collisions (if body has collision tracking)
       if (body.collisionCount !== undefined) {
         collisionCount += body.collisionCount;
       }
     });
   }
-  
+
   const totalEnergy = totalKineticEnergy + totalPotentialEnergy;
-  const totalMomentum = Math.sqrt(totalMomentumX * totalMomentumX + totalMomentumY * totalMomentumY);
-  
+  const totalMomentum = Math.sqrt(
+    totalMomentumX * totalMomentumX + totalMomentumY * totalMomentumY
+  );
+
   // Track initial energy on first calculation
-  if (initialEnergyRef && initialEnergyRef.current === null && totalEnergy > 0) {
+  if (
+    initialEnergyRef &&
+    initialEnergyRef.current === null &&
+    totalEnergy > 0
+  ) {
     initialEnergyRef.current = totalEnergy;
   }
-  
+
   // Calculate energy conservation
   let energyConservation = "";
-  if (initialEnergyRef && initialEnergyRef.current !== null && initialEnergyRef.current > 0) {
+  if (
+    initialEnergyRef &&
+    initialEnergyRef.current !== null &&
+    initialEnergyRef.current > 0
+  ) {
     const energyChange = totalEnergy - initialEnergyRef.current;
     const energyPercentChange = (energyChange / initialEnergyRef.current) * 100;
-    
+
     if (Math.abs(energyPercentChange) < 0.1) {
       energyConservation = "✓ Conserved";
     } else if (energyPercentChange > 0) {
@@ -363,15 +374,15 @@ export const SimInfoMapper = (state, context, refs = {}) => {
       energyConservation = `${energyPercentChange.toFixed(2)}% (Lost)`;
     }
   }
-  
+
   // Performance metrics
   const performanceData = {
-    "FPS": `${fps} fps`,
+    FPS: `${fps} fps`,
     "Frame Time": `${frameTime.toFixed(2)} ms`,
     "Update Time": `${updateTime.toFixed(2)} ms`,
     "Render Time": `${renderTime.toFixed(2)} ms`,
   };
-  
+
   // System statistics
   const systemData = {
     "Total Bodies": numBodies.toString(),
@@ -381,14 +392,14 @@ export const SimInfoMapper = (state, context, refs = {}) => {
     "System PE": `${totalPotentialEnergy.toFixed(2)} J`,
     "System Total E": `${totalEnergy.toFixed(2)} J`,
     "Total Momentum": `${totalMomentum.toFixed(2)} kg·m/s`,
-    "Collisions": collisionCount.toString(),
+    Collisions: collisionCount.toString(),
   };
-  
+
   // Add energy conservation
   if (energyConservation) {
     systemData["Energy Conservation"] = energyConservation;
   }
-  
+
   // Performance warnings and optimization suggestions
   const optimizationSuggestions = [];
   if (fps < 30) {
@@ -417,19 +428,19 @@ export const SimInfoMapper = (state, context, refs = {}) => {
     systemData["⚠ Collisions"] = "High collision rate";
     optimizationSuggestions.push("Optimize collision detection");
   }
-  
+
   if (optimizationSuggestions.length > 0) {
     systemData["💡 Optimizations"] = optimizationSuggestions.join(", ");
   }
-  
+
   // Performance rating
   let performanceRating = "Excellent";
   if (fps < 30) performanceRating = "Poor";
   else if (fps < 45) performanceRating = "Fair";
   else if (fps < 55) performanceRating = "Good";
-  
+
   systemData["Performance Rating"] = performanceRating;
-  
+
   return {
     ...performanceData,
     ...systemData,
