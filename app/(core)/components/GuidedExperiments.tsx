@@ -2,7 +2,7 @@
 "use client";
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFlask, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 interface Experiment {
   id: string;
@@ -10,12 +10,12 @@ interface Experiment {
   description: string;
   instructions: string[];
   question?: string;
-  parameters: Record<string, any>;
+  parameters: Record<string, string | number | boolean>;
 }
 
 interface GuidedExperimentsProps {
   experiments: Experiment[];
-  onApplyExperiment: (params: Record<string, any>) => void;
+  onApplyExperiment: (params: Record<string, string | number | boolean>) => void;
 }
 
 export default function GuidedExperiments({

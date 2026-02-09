@@ -9,7 +9,7 @@ interface LearningObjectivesProps {
 }
 
 export default function LearningObjectives({
-  title,
+  title: _title,
   goals,
   variables,
 }: LearningObjectivesProps) {
