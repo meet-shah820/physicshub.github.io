@@ -3301,16 +3301,56 @@ footer {
 
 /* Input Groups */
 .inputs-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.inputs-group:first-of-type {
+  margin-top: 0; /* Remove default margin, handle spacing via title */
+}
+
+.inputs-group:first-of-type .inputs-group-title {
+  margin-top: 2.5rem; /* Add more spacing above first heading to separate from content above */
+}
+
+.inputs-group .inputs-container {
+  margin-top: 0.5rem;
 }
 
 .inputs-group-title {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: var(--accent-color);
-  margin-bottom: 0.75rem;
-  font-weight: 600;
+  margin: 0 0 1.5rem 3rem;
+  padding-bottom: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 8px var(--accent-color), 0 0 12px color-mix(in oklab, var(--accent-color), transparent 50%);
+  transition: text-shadow 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.inputs-group-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: color-mix(in oklab, var(--accent-color), transparent 80%);
+}
+
+.inputs-group-title::before {
+  content: "";
+  position: absolute;
+  left: -1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 1.2em;
+  background: var(--accent-color);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--accent-color);
 }
 
 .simulation-header-section {
@@ -3340,6 +3380,15 @@ footer {
 [data-theme="light"] .experiments-title {
   text-shadow: none;
   color: var(--accent-color);
+}
+
+[data-theme="light"] .inputs-group-title {
+  text-shadow: none;
+  color: var(--accent-color);
+}
+
+[data-theme="light"] .inputs-group-title::before {
+  box-shadow: 0 0 4px color-mix(in oklab, var(--accent-color), transparent 60%);
 }
 
 [data-theme="light"] .equation-item,
@@ -3600,7 +3649,7 @@ footer {
 
 /* Educational Section */
 .educational-section {
-  margin: 1.5rem;
+  margin: 1rem 1.5rem;
 }
 
 .educational-content {
@@ -3611,8 +3660,8 @@ footer {
 
 /* Experiments Section - Separate */
 .experiments-section {
-  margin: 1.5rem;
-  margin-bottom: 3rem; /* Extra bottom margin to prevent cutoff */
+  margin: 1rem 1.5rem;
+  margin-bottom: 2rem; /* Extra bottom margin to prevent cutoff */
 }
 
 .experiments-section .guided-experiments {
@@ -3671,7 +3720,8 @@ footer {
     padding: 1rem;
   }
 
-  .educational-section {
+  .educational-section,
+  .experiments-section {
     margin: 1rem;
   }
 }
