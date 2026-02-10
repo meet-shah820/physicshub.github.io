@@ -30,7 +30,9 @@ interface EducationalTheorySectionProps {
     question?: string;
     parameters: Record<string, string | number | boolean>;
   }>;
-  onApplyExperiment: (params: Record<string, string | number | boolean>) => void;
+  onApplyExperiment: (
+    params: Record<string, string | number | boolean>
+  ) => void;
 }
 
 export default function EducationalTheorySection({

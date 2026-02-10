@@ -15,7 +15,9 @@ interface Experiment {
 
 interface GuidedExperimentsProps {
   experiments: Experiment[];
-  onApplyExperiment: (params: Record<string, string | number | boolean>) => void;
+  onApplyExperiment: (
+    params: Record<string, string | number | boolean>
+  ) => void;
 }
 
 export default function GuidedExperiments({
