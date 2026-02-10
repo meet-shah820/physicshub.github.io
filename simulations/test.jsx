@@ -1,7 +1,7 @@
 // app/pages/simulations/test.jsx
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { usePathname } from "next/navigation";
 
 // --- Core Physics & Constants ---
@@ -12,7 +12,6 @@ import {
   isPaused,
   setPause,
   setTimeScale,
-  getTimeScale,
 } from "../app/(core)/constants/Time.js";
 import {
   INITIAL_INPUTS,
@@ -55,14 +54,13 @@ export default function Test() {
     storageKey
   );
   const [resetVersion, setResetVersion] = useState(0);
-  const [warnings, setWarnings] = useState([]);
   const [currentSeed, setCurrentSeed] = useState(0);
   const randomSeedRef = useRef(0);
 
   // Initialize time scale
   useEffect(() => {
     setTimeScale(inputs.timeScale || 1.0);
-  }, []);
+  }, [inputs.timeScale]);
 
   const initialEnergyRef = useRef(null);
   const { simData, updateSimInfo } = useSimInfo({
@@ -100,44 +98,7 @@ export default function Test() {
     [setInputs]
   );
 
-  // Check for physics warnings
-  useEffect(() => {
-    const newWarnings = [];
 
-    // Check for numerical instability with many bodies
-    if (inputs.numBodies > 50) {
-      newWarnings.push({
-        id: "many-bodies",
-        message: `⚠ Large number of bodies (${inputs.numBodies}) may cause numerical instability`,
-        severity: "warning",
-      });
-    }
-
-    // Check for energy drift (if we have energy data)
-    if (lastEnergyRef.current && simData["Total Energy"]) {
-      const currentEnergy = parseFloat(
-        simData["Total Energy"].replace(" J", "")
-      );
-      const energyDiff = Math.abs(currentEnergy - lastEnergyRef.current);
-      const energyPercentChange = (energyDiff / lastEnergyRef.current) * 100;
-
-      if (energyPercentChange > 5 && lastEnergyRef.current > 0.01) {
-        newWarnings.push({
-          id: "energy-drift",
-          message: `⚠ Energy not conserved (${energyPercentChange.toFixed(1)}% change)`,
-          severity: "warning",
-        });
-      }
-
-      lastEnergyRef.current = currentEnergy;
-    } else if (simData["Total Energy"]) {
-      lastEnergyRef.current = parseFloat(
-        simData["Total Energy"].replace(" J", "")
-      );
-    }
-
-    setWarnings(newWarnings);
-  }, [inputs.numBodies, simData["Total Energy"]]);
 
   // 🔄 Funzione per creare corpi con seed deterministico
   const createBodies = useCallback((p, numBodies, params) => {
@@ -340,7 +301,7 @@ export default function Test() {
         } else {
           randomSeedRef.current = Date.now();
         }
-        lastEnergyRef.current = null; // Reset energy tracking
+        setLastEnergy(null); // Reset energy tracking
         initialEnergyRef.current = null; // Reset initial energy for conservation tracking
         lastMassRef.current = null; // Reset mass tracking
         // Reset collision counts for all bodies
