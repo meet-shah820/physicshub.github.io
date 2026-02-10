@@ -3082,11 +3082,11 @@ footer {
 
 /* Learning Objectives */
 .learning-objectives {
-  background: color-mix(in oklab, var(--accent-color), transparent 92%);
-  border: 1px solid color-mix(in oklab, var(--accent-color), transparent 60%);
+  background: transparent;
+  border: none;
   border-radius: var(--border-radius);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  padding: 0;
+  margin-bottom: 0;
 }
 
 .learning-title {
@@ -3101,10 +3101,10 @@ footer {
 }
 
 .learning-section-title {
-  font-size: 1.1rem;
-  color: var(--text-color);
-  margin-bottom: 0.5rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--accent-color);
+  margin-bottom: 0.8rem;
+  font-weight: 700;
 }
 
 .learning-list {
@@ -3129,11 +3129,11 @@ footer {
 
 /* Physics Equations */
 .physics-equations {
-  background: color-mix(in oklab, var(--accent-color), transparent 92%);
-  border: 1px solid color-mix(in oklab, var(--accent-color), transparent 60%);
+  background: transparent;
+  border: none;
   border-radius: var(--border-radius);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  padding: 0;
+  margin-bottom: 0;
 }
 
 .equations-title {
@@ -3149,10 +3149,16 @@ footer {
 }
 
 .equation-item {
-  padding: 0.75rem;
-  background: color-mix(in oklab, var(--bg-color), transparent 50%);
+  padding: 0.9rem;
+  background: color-mix(in oklab, var(--accent-color), transparent 95%);
   border-radius: calc(var(--border-radius) * 0.8);
-  border: 1px solid color-mix(in oklab, var(--accent-color), transparent 40%);
+  border: 1px solid color-mix(in oklab, var(--accent-color), transparent 50%);
+  transition: all 0.2s ease;
+}
+
+.equation-item:hover {
+  background: color-mix(in oklab, var(--accent-color), transparent 90%);
+  border-color: color-mix(in oklab, var(--accent-color), transparent 30%);
 }
 
 .equation-formula {
@@ -3198,11 +3204,11 @@ footer {
 
 /* Guided Experiments */
 .guided-experiments {
-  background: color-mix(in oklab, var(--accent-color), transparent 92%);
-  border: 1px solid color-mix(in oklab, var(--accent-color), transparent 60%);
+  background: transparent;
+  border: none;
   border-radius: var(--border-radius);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  padding: 0;
+  margin-bottom: 0;
 }
 
 .experiments-title {
@@ -3528,24 +3534,48 @@ footer {
   margin: 0;
 }
 
-.collapsible-content .learning-title,
-.collapsible-content .equations-title,
-.collapsible-content .experiments-title {
-  display: none; /* Hide duplicate titles */
+/* Section title styling in collapsible content */
+.collapsible-content .learning-section-title {
+  font-size: 1.2rem;
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+  font-weight: 600;
+  text-shadow: 0 0 4px var(--accent-color);
+}
+
+.collapsible-content .learning-section-title:first-of-type {
+  margin-top: 0;
 }
 
 /* Improve spacing in collapsible sections */
 .collapsible-content .learning-section {
-  margin-top: 1rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
-.collapsible-content .learning-section:first-child {
-  margin-top: 0;
+.collapsible-content .learning-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Equation styling in collapsible */
+.collapsible-content .equation-item {
+  margin-bottom: 0.75rem;
+}
+
+.collapsible-content .equation-item:last-child {
+  margin-bottom: 0;
 }
 
 /* Adjust spacing for inputs inside collapsible */
 .collapsible-content .inputs-container {
   margin-top: 0.5rem;
+}
+
+/* Light theme adjustments for collapsible content */
+[data-theme="light"] .collapsible-content .learning-section-title {
+  text-shadow: none;
+  color: var(--accent-color);
 }
 
 .collapsible-content .inputs-group {
@@ -3658,19 +3688,39 @@ footer {
 
 /* Educational Section */
 .educational-section {
-  margin: 1rem 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.educational-section .collapsible-section {
+  background: color-mix(in oklab, var(--accent-color), transparent 88%);
+  border: 2px solid color-mix(in oklab, var(--accent-color), transparent 40%);
 }
 
 .educational-content {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Experiments Section - Separate */
 .experiments-section {
-  margin: 1rem 1.5rem;
-  margin-bottom: 2rem; /* Extra bottom margin to prevent cutoff */
+  margin: 1.5rem 0;
+  margin-bottom: 2rem;
+}
+
+.experiments-section .collapsible-section {
+  background: color-mix(in oklab, var(--accent-color), transparent 88%);
+  border: 2px solid color-mix(in oklab, var(--accent-color), transparent 40%);
 }
 
 .experiments-section .guided-experiments {
@@ -3681,16 +3731,16 @@ footer {
 }
 
 .experiments-section .experiments-list {
-  padding-bottom: 1rem; /* Extra padding at bottom */
+  padding-bottom: 1rem;
 }
 
 .experiments-section .experiment-card {
   margin-bottom: 1rem;
+  background: color-mix(in oklab, var(--bg-color), transparent 30%);
 }
 
 .experiments-section .experiment-card:last-child {
   margin-bottom: 0;
-  padding-bottom: 0.5rem; /* Extra padding for last card */
 }
 
 .educational-content .learning-objectives,
@@ -3705,17 +3755,31 @@ footer {
 .educational-content .learning-title,
 .educational-content .equations-title,
 .educational-content .experiments-title {
-  display: block; /* Show titles in educational section */
+  display: block;
   font-size: 1.2rem;
   margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--accent-color);
 }
 
 .educational-content .learning-section {
-  margin-top: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
 .educational-content .learning-section:first-child {
   margin-top: 0;
+}
+
+/* Light theme */
+[data-theme="light"] .educational-section .collapsible-section,
+[data-theme="light"] .experiments-section .collapsible-section {
+  background: #ffffff;
+  border-color: var(--border-color);
+}
+
+[data-theme="light"] .experiments-section .experiment-card {
+  background: #f8f9fa;
 }
 
 /* Responsive adjustments */
