@@ -1,7 +1,14 @@
 // app/pages/simulations/test.jsx
 "use client";
 
-import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+  useReducer,
+} from "react";
 import { usePathname } from "next/navigation";
 
 // --- Core Physics & Constants ---
@@ -261,12 +268,7 @@ export default function Test() {
         });
 
         if (bodiesRef.current.length > 0) {
-          updateSimInfo(
-            p,
-            {},
-            { p, bodies: bodiesRef.current },
-            SimInfoMapper
-          );
+          updateSimInfo(p, {}, { p, bodies: bodiesRef.current }, SimInfoMapper);
         }
       };
 

@@ -57,7 +57,9 @@ export default function GuidedExperiments({
               <strong>Instructions:</strong>
               <ol>
                 {experiment.instructions.map((instruction, i) => (
-                  <li key={`${experiment.id}-instruction-${i}`}>{instruction}</li>
+                  <li key={`${experiment.id}-instruction-${i}`}>
+                    {instruction}
+                  </li>
                 ))}
               </ol>
             </div>
