@@ -1,7 +1,7 @@
 // app/pages/simulations/test.jsx
 "use client";
 
-import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 // --- Core Physics & Constants ---
@@ -17,8 +17,6 @@ import {
 import {
   INITIAL_INPUTS,
   INPUT_FIELDS,
-  PHYSICS_CONTROLS,
-  VISUALIZATION_CONTROLS,
   SimInfoMapper,
   LEARNING_OBJECTIVES,
   PHYSICS_EQUATIONS,
@@ -58,7 +56,7 @@ export default function Test() {
   );
   const [resetVersion, setResetVersion] = useState(0);
   const [warnings, setWarnings] = useState([]);
-  const [selectedBodyIndex, setSelectedBodyIndex] = useState(0);
+  const [currentSeed, setCurrentSeed] = useState(0);
   const randomSeedRef = useRef(0);
 
   // Initialize time scale
@@ -139,7 +137,7 @@ export default function Test() {
     }
 
     setWarnings(newWarnings);
-  }, [inputs.numBodies, simData]);
+  }, [inputs.numBodies, simData["Total Energy"]]);
 
   // 🔄 Funzione per creare corpi con seed deterministico
   const createBodies = useCallback((p, numBodies, params) => {
@@ -233,7 +231,7 @@ export default function Test() {
           lastMassRef.current !== null &&
           Math.abs(lastMassRef.current - currentMass) > 0.001;
 
-        bodiesRef.current.forEach((body, i) => {
+        bodiesRef.current.forEach((body) => {
           body.params.gravity = gravity;
 
           // If mass input changed, update each body's mass proportionally while conserving momentum
@@ -277,7 +275,7 @@ export default function Test() {
         // Performance tracking: Render phase
         const renderStart = performance.now();
 
-        bodiesRef.current.forEach((body, i) => {
+        bodiesRef.current.forEach((body) => {
           const { pos } = body.state;
           const pixelX = toPixels(pos.x);
           const pixelY = toPixels(pos.y);
@@ -393,13 +391,14 @@ export default function Test() {
               <NumberInput
                 name="randomSeed"
                 label="Random Seed:"
-                val={inputs.randomSeed || randomSeedRef.current}
+                val={inputs.randomSeed || currentSeed}
                 min={0}
                 max={999999}
                 step={1}
                 onChange={(e) => {
                   const value = Number(e.target.value);
                   handleInputChange("randomSeed", value);
+                  setCurrentSeed(value);
                   randomSeedRef.current = value;
                 }}
               />

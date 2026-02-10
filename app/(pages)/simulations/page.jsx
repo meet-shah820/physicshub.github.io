@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { flushSync } from "react-dom";
 import Chapter from "../../(core)/components/Chapter.jsx";
 import Chapters from "../../(core)/data/chapters.js";
 import { Search } from "../../(core)/components/Search";
@@ -18,9 +19,11 @@ export default function Simulations() {
 
   // Handle client-side hydration
   useEffect(() => {
-    setIsClient(true);
     const hasVisited = localStorage.getItem("hasVisitedSimulations");
-    setShowHero(!hasVisited);
+    flushSync(() => {
+      setIsClient(true);
+      setShowHero(!hasVisited);
+    });
     window.scrollTo(0, 0);
   }, []);
 

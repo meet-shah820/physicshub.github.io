@@ -26,7 +26,7 @@ export default function LearningObjectives({
         <h3 className="learning-section-title">Key Variables</h3>
         <ul className="learning-list">
           {variables.map((variable, i) => (
-            <li key={i}>{variable}</li>
+            <li key={`variable-${i}`}>{variable}</li>
           ))}
         </ul>
       </div>
