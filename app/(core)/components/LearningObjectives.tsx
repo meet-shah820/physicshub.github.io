@@ -3,13 +3,11 @@
 import React from "react";
 
 interface LearningObjectivesProps {
-  title: string;
   goals: string[];
   variables: string[];
 }
 
 export default function LearningObjectives({
-  title: _title,
   goals,
   variables,
 }: LearningObjectivesProps) {

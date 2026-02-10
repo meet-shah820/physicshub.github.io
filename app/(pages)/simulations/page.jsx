@@ -19,15 +19,10 @@ export default function Simulations() {
   // Handle client-side hydration
   useEffect(() => {
     setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
-    // Check localStorage only on client after hydration
     const hasVisited = localStorage.getItem("hasVisitedSimulations");
     setShowHero(!hasVisited);
     window.scrollTo(0, 0);
-  }, [isClient]);
+  }, []);
 
   const handleStart = () => {
     if (typeof window !== "undefined") {
