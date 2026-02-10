@@ -53,6 +53,7 @@ export default function Test() {
     INITIAL_INPUTS,
     storageKey
   );
+
   const [resetVersion, setResetVersion] = useState(0);
   const [currentSeed, setCurrentSeed] = useState(0);
   const randomSeedRef = useRef(0);
@@ -66,22 +67,57 @@ export default function Test() {
   const { simData, updateSimInfo } = useSimInfo({
     customRefs: { initialEnergyRef },
   });
+
+  // ✅ Derived energy (no setState-in-effect)
+  const lastEnergy = useMemo(() => {
+    if (!simData["Total Energy"]) return null;
+    return parseFloat(simData["Total Energy"].replace(" J", ""));
+  }, [simData]);
+
+  const warnings = useMemo(() => {
+    const newWarnings = [];
+
+    if (inputs.numBodies > 50) {
+      newWarnings.push({
+        id: "many-bodies",
+        message: `⚠ Large number of bodies (${inputs.numBodies}) may cause numerical instability`,
+        severity: "warning",
+      });
+    }
+
+    if (lastEnergy && simData["Total Energy"]) {
+      const currentEnergy = parseFloat(
+        simData["Total Energy"].replace(" J", "")
+      );
+      const energyDiff = Math.abs(currentEnergy - lastEnergy);
+      const energyPercentChange = (energyDiff / lastEnergy) * 100;
+
+      if (energyPercentChange > 5 && lastEnergy > 0.01) {
+        newWarnings.push({
+          id: "energy-drift",
+          message: `⚠ Energy not conserved (${energyPercentChange.toFixed(
+            1
+          )}% change)`,
+          severity: "warning",
+        });
+      }
+    }
+
+    return newWarnings;
+  }, [inputs.numBodies, simData, lastEnergy]);
+
   const bodiesRef = useRef([]);
   const trailLayerRef = useRef(null);
-  const lastEnergyRef = useRef(null);
   const lastMassRef = useRef(null);
 
-  // 🔧 Gestione input
   const handleInputChange = useCallback(
     (name, value) => {
       setInputs((prev) => ({ ...prev, [name]: value }));
 
-      // Update time scale if changed
       if (name === "timeScale") {
         setTimeScale(value);
       }
 
-      // Update random seed if deterministic mode is enabled
       if (name === "deterministic" && value) {
         randomSeedRef.current = inputs.randomSeed || 0;
       }
@@ -89,7 +125,6 @@ export default function Test() {
     [setInputs, inputs.randomSeed]
   );
 
-  // Apply experiment parameters
   const handleApplyExperiment = useCallback(
     (params) => {
       setInputs((prev) => ({ ...prev, ...params }));
@@ -98,9 +133,6 @@ export default function Test() {
     [setInputs]
   );
 
-
-
-  // 🔄 Funzione per creare corpi con seed deterministico
   const createBodies = useCallback((p, numBodies, params) => {
     const {
       mass,
@@ -113,7 +145,6 @@ export default function Test() {
     } = params;
     const { clientWidth: w, clientHeight: h } = p._userNode;
 
-    // Set random seed if deterministic
     if (deterministic) {
       p.randomSeed(randomSeed || randomSeedRef.current);
     }
@@ -142,7 +173,6 @@ export default function Test() {
     });
   }, []);
 
-  // 🎨 Inizializza layer trail
   const initTrailLayer = useCallback((p, w, h) => {
     const layer = p.createGraphics(w, h);
     layer.pixelDensity(1);
@@ -150,7 +180,6 @@ export default function Test() {
     return layer;
   }, []);
 
-  // 🖌️ Sketch P5
   const sketch = useCallback(
     (p) => {
       let lastNumBodies = inputsRef.current.numBodies;
@@ -168,25 +197,20 @@ export default function Test() {
       };
 
       p.draw = () => {
-        const frameStart = performance.now();
-        const { gravity, numBodies, trailEnabled, trailLength } =
-          inputsRef.current;
         const dt = computeDelta(p);
         if (dt <= 0) return;
 
-        // 🔄 Ricrea corpi se numBodies cambia
+        const { gravity, numBodies, trailEnabled, trailLength } =
+          inputsRef.current;
+
         if (numBodies !== lastNumBodies) {
           bodiesRef.current = createBodies(p, numBodies, inputsRef.current);
           lastNumBodies = numBodies;
         }
 
-        // Performance tracking: Update phase
-        const updateStart = performance.now();
-
         p.clear();
         p.image(trailLayerRef.current, 0, 0);
 
-        // Handle mass changes with momentum conservation
         const currentMass = inputsRef.current.mass;
         const massChanged =
           lastMassRef.current !== null &&
@@ -195,85 +219,52 @@ export default function Test() {
         bodiesRef.current.forEach((body) => {
           body.params.gravity = gravity;
 
-          // If mass input changed, update each body's mass proportionally while conserving momentum
           if (massChanged && lastMassRef.current > 0) {
-            // Calculate the mass ratio (how much the base mass changed)
             const massRatio = currentMass / lastMassRef.current;
-
-            // Store old mass and momentum
             const oldMass = body.params.mass;
             const momentumX = body.state.vel.x * oldMass;
             const momentumY = body.state.vel.y * oldMass;
 
-            // Update mass proportionally (maintains the random variation)
             body.params.mass = oldMass * massRatio;
 
-            // Conserve momentum: p = mv = constant
-            // v_new = p / m_new = (v_old * m_old) / m_new
             if (body.params.mass > 0) {
               body.state.vel.x = momentumX / body.params.mass;
               body.state.vel.y = momentumY / body.params.mass;
             }
           }
 
-          // Apply energy dissipation if enabled
           if (
             inputsRef.current.energyDissipation &&
             inputsRef.current.dampingCoefficient < 1.0
           ) {
-            // Apply damping to velocity to gradually reduce energy
             body.state.vel.mult(inputsRef.current.dampingCoefficient);
           }
+
           body.step(p, dt);
         });
 
-        // Update last mass reference
         lastMassRef.current = currentMass;
-
-        const updateEnd = performance.now();
-        const updateTime = updateEnd - updateStart;
-
-        // Performance tracking: Render phase
-        const renderStart = performance.now();
 
         bodiesRef.current.forEach((body) => {
           const { pos } = body.state;
-          const pixelX = toPixels(pos.x);
-          const pixelY = toPixels(pos.y);
-          const bodySizePx = toPixels(body.params.size);
-
           drawBallWithTrail(p, trailLayerRef.current, {
             bg: getBackgroundColor(),
             trailEnabled,
             trailAlpha: 60,
             trailLength: trailLength || 100,
-            pixelX,
-            pixelY,
-            size: bodySizePx,
+            pixelX: toPixels(pos.x),
+            pixelY: toPixels(pos.y),
+            size: toPixels(body.params.size),
             isHover: body.isHover(p),
             ballColor: body.params.color,
           });
         });
 
-        const renderEnd = performance.now();
-        const renderTime = renderEnd - renderStart;
-        const frameEnd = performance.now();
-        const frameTime = frameEnd - frameStart;
-
-        // Update sim info with performance metrics (only once per frame)
         if (bodiesRef.current.length > 0) {
           updateSimInfo(
             p,
             {},
-            {
-              p,
-              bodies: bodiesRef.current,
-              performanceMetrics: {
-                frameTime,
-                updateTime,
-                renderTime,
-              },
-            },
+            { p, bodies: bodiesRef.current },
             SimInfoMapper
           );
         }
@@ -295,20 +286,19 @@ export default function Test() {
         const wasPaused = isPaused();
         resetTime();
         if (wasPaused) setPause(true);
-        // Update random seed if deterministic
-        if (inputs.deterministic) {
-          randomSeedRef.current = inputs.randomSeed || Date.now();
-        } else {
-          randomSeedRef.current = Date.now();
-        }
-        setLastEnergy(null); // Reset energy tracking
-        initialEnergyRef.current = null; // Reset initial energy for conservation tracking
-        lastMassRef.current = null; // Reset mass tracking
-        // Reset collision counts for all bodies
+
+        randomSeedRef.current = inputs.deterministic
+          ? inputs.randomSeed || Date.now()
+          : Date.now();
+
+        initialEnergyRef.current = null;
+        lastMassRef.current = null;
+
         bodiesRef.current.forEach((body) => {
           body.collisionCount = 0;
           body.lastCollisionPos = null;
         });
+
         setResetVersion((v) => v + 1);
       }}
       inputs={inputs}
@@ -317,15 +307,15 @@ export default function Test() {
         setInputs(loadedInputs);
         setResetVersion((v) => v + 1);
       }}
-      hideDefaultControls={false}
       dynamicInputs={
         <>
           <DynamicInputs
             config={INPUT_FIELDS}
             values={inputs}
             onChange={handleInputChange}
-            grouped={true}
+            grouped
           />
+
           <div className="inputs-container">
             <NumberInput
               name="timeScale"
@@ -334,12 +324,11 @@ export default function Test() {
               min={0.1}
               max={2.0}
               step={0.1}
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                handleInputChange("timeScale", value);
-                setTimeScale(value);
-              }}
+              onChange={(e) =>
+                handleInputChange("timeScale", Number(e.target.value))
+              }
             />
+
             <CheckboxInput
               name="deterministic"
               label="Deterministic Mode"
@@ -348,6 +337,7 @@ export default function Test() {
                 handleInputChange("deterministic", e.target.checked)
               }
             />
+
             {inputs.deterministic && (
               <NumberInput
                 name="randomSeed"
@@ -366,32 +356,18 @@ export default function Test() {
             )}
           </div>
 
-          {/* Learning Guide & Theory Section */}
           <CollapsibleSection
             title="Learning Guide & Theory"
-            defaultExpanded={false}
             icon={<FontAwesomeIcon icon={faBook} />}
-            className="educational-section"
           >
-            <div className="educational-content">
-              <LearningObjectives
-                title={LEARNING_OBJECTIVES.title}
-                goals={LEARNING_OBJECTIVES.goals}
-                variables={LEARNING_OBJECTIVES.variables}
-              />
-
-              <PhysicsEquations equations={PHYSICS_EQUATIONS} />
-
-              {warnings.length > 0 && <PhysicsWarnings warnings={warnings} />}
-            </div>
+            <LearningObjectives {...LEARNING_OBJECTIVES} />
+            <PhysicsEquations equations={PHYSICS_EQUATIONS} />
+            {warnings.length > 0 && <PhysicsWarnings warnings={warnings} />}
           </CollapsibleSection>
 
-          {/* Guided Experiments Section - Separate */}
           <CollapsibleSection
             title="Guided Experiments"
-            defaultExpanded={false}
             icon={<FontAwesomeIcon icon={faFlask} />}
-            className="experiments-section"
           >
             <GuidedExperiments
               experiments={GUIDED_EXPERIMENTS}
